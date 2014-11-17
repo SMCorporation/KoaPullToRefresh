@@ -338,12 +338,14 @@ static char UIScrollViewPullToRefreshView;
         return;
     }
     
-    //Change title label alpha
-    CGFloat absOffset = fabsf(self.originalTopInset);
-    absOffset /= contentOffset.y;
-    absOffset = 1.4 + absOffset;
-    [self.titleLabel setAlpha:absOffset];
-
+    CGFloat offsetY = contentOffset.y;
+    if (offsetY > -self.originalTopInset) {
+        offsetY = -self.originalTopInset;
+    }
+    
+    CGFloat alpha = fabsf(offsetY + self.originalTopInset) / self.originalTopInset;
+    [self.titleLabel setAlpha:alpha];
+    
     
     if(self.state != KoaPullToRefreshStateLoading) {
         CGFloat scrollOffsetThreshold;

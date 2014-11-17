@@ -235,6 +235,7 @@ static char UIScrollViewPullToRefreshView;
     
     //Set title text
     self.titleLabel.text = [self.titles objectAtIndex:self.state];
+    self.titleLabel.alpha = 0;
     
     //Set title frame
     CGSize titleSize = [self.titleLabel.text sizeWithFont:self.titleLabel.font constrainedToSize:CGSizeMake(labelMaxWidth,self.titleLabel.font.lineHeight) lineBreakMode:self.titleLabel.lineBreakMode];

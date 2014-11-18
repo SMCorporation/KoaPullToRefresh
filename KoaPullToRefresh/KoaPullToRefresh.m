@@ -94,6 +94,9 @@ static char UIScrollViewPullToRefreshView;
     KoaPullToRefreshViewHeightShowed = pullToRefreshHeightShowed;
     KoaPullToRefreshViewTitleBottomMargin += pullToRefreshHeightShowed;
     
+    self.pullToRefreshView.titleLabel.alpha = 0;
+    self.pullToRefreshView.loaderLabel.alpha = 0;
+    
     [self setContentInset:UIEdgeInsetsMake(KoaPullToRefreshViewHeightShowed + self.contentInset.top, self.contentInset.left, self.contentInset.bottom, self.contentInset.right)];
     
     if (!self.pullToRefreshView) {
@@ -124,7 +127,7 @@ static char UIScrollViewPullToRefreshView;
     }
     
     self.pullToRefreshView.offsetY = programmingAnimationOffestY;
-//    self.pullToRefreshView.titleLabel.alpha = 1;
+    //    self.pullToRefreshView.titleLabel.alpha = 1;
 }
 
 - (void)setPullToRefreshView:(KoaPullToRefreshView *)pullToRefreshView {
@@ -144,7 +147,7 @@ static char UIScrollViewPullToRefreshView;
     if (!self.pullToRefreshView) {
         return;
     }
-
+    
     self.pullToRefreshView.hidden = !showsPullToRefresh;
     if(!showsPullToRefresh) {
         if (self.pullToRefreshView.isObserving) {
@@ -195,7 +198,7 @@ static char UIScrollViewPullToRefreshView;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.state = KoaPullToRefreshStateStopped;
         [self.titleLabel setTextAlignment:NSTextAlignmentCenter];
-        [self.loaderLabel setTextAlignment:NSTextAlignmentLeft];
+        [self.loaderLabel setTextAlignment:NSTextAlignmentCenter];
         
         self.titles = [NSMutableArray arrayWithObjects: NSLocalizedString(@"Pull",),
                        NSLocalizedString(@"Release",),
@@ -208,6 +211,9 @@ static char UIScrollViewPullToRefreshView;
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
+    self.titleLabel.alpha = 0;
+    self.loaderLabel.alpha = 0;
+    
     if (self.superview && newSuperview == nil) {
         UIScrollView *scrollView = (UIScrollView *)self.superview;
         if (scrollView.showsPullToRefresh) {
@@ -216,7 +222,7 @@ static char UIScrollViewPullToRefreshView;
                     self.state = KoaPullToRefreshStateStopped;
                     [self stopAnimating];
                 }
-
+                
                 //If enter this branch, it is the moment just before "KoaPullToRefreshView's dealloc", so remove observer here
                 [scrollView removeObserver:self forKeyPath:@"contentOffset"];
                 [scrollView removeObserver:self forKeyPath:@"contentSize"];
@@ -235,7 +241,6 @@ static char UIScrollViewPullToRefreshView;
     
     //Set title text
     self.titleLabel.text = [self.titles objectAtIndex:self.state];
-    self.titleLabel.alpha = 0;
     
     //Set title frame
     CGSize titleSize = [self.titleLabel.text sizeWithFont:self.titleLabel.font constrainedToSize:CGSizeMake(labelMaxWidth,self.titleLabel.font.lineHeight) lineBreakMode:self.titleLabel.lineBreakMode];
@@ -346,7 +351,7 @@ static char UIScrollViewPullToRefreshView;
     
     CGFloat alpha = fabsf(offsetY + self.originalTopInset) / self.originalTopInset;
     [self.titleLabel setAlpha:alpha];
-    
+    [self.loaderLabel setAlpha:alpha];
     
     if(self.state != KoaPullToRefreshStateLoading) {
         CGFloat scrollOffsetThreshold;
@@ -358,6 +363,7 @@ static char UIScrollViewPullToRefreshView;
             self.state = KoaPullToRefreshStateTriggered;
         else if(contentOffset.y >= scrollOffsetThreshold && self.state != KoaPullToRefreshStateStopped)
             self.state = KoaPullToRefreshStateStopped;
+        
     } else {
         CGFloat offset;
         UIEdgeInsets contentInset;
@@ -467,9 +473,9 @@ static char UIScrollViewPullToRefreshView;
     [self setScrollViewContentOffset:CGPointMake(self.scrollView.contentOffset.x, -(self.originalTopInset + KoaPullToRefreshViewHeightShowed + self.frame.size.height))
                  withComplitionBlock:^{
                      if (weakSelf.state != KoaPullToRefreshStateLoading) {
-//                         weakSelf.state = KoaPullToRefreshStateLoading;
+                         //                         weakSelf.state = KoaPullToRefreshStateLoading;
                      }
-    }];
+                 }];
 }
 
 - (void)setScrollViewContentOffset:(CGPoint)contentOffset withComplitionBlock:(void(^)())complitionBlock
